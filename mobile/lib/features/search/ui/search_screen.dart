@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import '../data/search_service.dart';
+import '../../gallery/data/gallery_repository.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -10,6 +13,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final _controller = TextEditingController();
   final _service = SearchService();
+  final _gallery = GalleryRepository();
   List<SearchHit> _results = const [];
   bool _loading = false;
 
@@ -23,6 +27,20 @@ class _SearchScreenState extends State<SearchScreen> {
       _results = hits;
       _loading = false;
     });
+  }
+
+  Widget _resultTile(SearchHit r) {
+    final Uint8List? thumb = _gallery.thumbnailFor(r.key);
+    if (thumb != null) {
+      return Image.memory(thumb, fit: BoxFit.cover);
+    }
+    return ColoredBox(
+      color: Colors.blueGrey.shade200,
+      child: Center(
+        child: Text('${(r.score * 100).toStringAsFixed(0)}%',
+            style: const TextStyle(color: Colors.black54)),
+      ),
+    );
   }
 
   @override
@@ -57,13 +75,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     itemCount: _results.length,
                     itemBuilder: (_, i) {
-                      final r = _results[i];
-                      return Card(
-                        child: Center(
-                          child: Text(
-                              '${r.key}\n${(r.score * 100).toStringAsFixed(0)}%'),
-                        ),
-                      );
+                      return _resultTile(_results[i]);
                     },
                   ),
           ),
