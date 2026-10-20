@@ -62,7 +62,20 @@ $env:FLUTTER_STORAGE_BASE_URL = "https://storage.flutter-io.cn"  # 首次/清理
 C:\Users\Administrator\flutter\bin\flutter.bat build apk --debug
 ```
 
-## 5. 遗留事项
+## 5. 一期 MVP 最终全量验证（Task 22，2026-10-20）
+
+一期 MVP 收尾质量关卡，双端构建与全量验证最终状态：
+
+- **静态分析**：`dart analyze` → `No issues found!`（零 issue）。
+- **全量测试**：`flutter test` → 18 个测试全部 PASS（覆盖裁剪、编辑管线、滤镜引擎、图库仓库、Photo 模型、颜色直方图、感知哈希、万级索引检索性能 < 2s、搜索服务、文本查询解析、向量索引、Result 冒烟等）。
+- **安卓 APK debug 构建**：成功。
+  - 产物：`mobile/build/app/outputs/flutter-apk/app-debug.apk`
+  - 大小：163.4 MB
+  - 增量构建耗时：Gradle `assembleDebug` 约 13.7 秒（引擎 artifact 已缓存）
+  - 已知告警：`photo_manager` 插件仍使用 KGP，未来 Flutter 版本需插件迁移至 Built-in Kotlin（仅警告，不阻塞）。
+- **鸿蒙 HAP**：未构建，为已知风险。DevEco Studio 未安装，一期仅交付鸿蒙骨架说明，纯 Dart 逻辑层保持双端通用，待 DevEco 就绪后补做 HAP 验证。
+
+## 6. 遗留事项
 
 - release 构建未验证（签名配置未做，Task 范围外）。
 - 鸿蒙端工具链与构建验证待 DevEco Studio 就绪后补做。
