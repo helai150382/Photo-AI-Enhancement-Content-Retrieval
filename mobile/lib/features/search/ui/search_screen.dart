@@ -1,8 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import '../data/search_service.dart';
-import '../../gallery/data/gallery_repository.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -13,7 +10,6 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final _controller = TextEditingController();
   final _service = SearchService();
-  final _gallery = GalleryRepository();
   List<SearchHit> _results = const [];
   bool _loading = false;
 
@@ -30,10 +26,6 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _resultTile(SearchHit r) {
-    final Uint8List? thumb = _gallery.thumbnailFor(r.key);
-    if (thumb != null) {
-      return Image.memory(thumb, fit: BoxFit.cover);
-    }
     return ColoredBox(
       color: Colors.blueGrey.shade200,
       child: Center(
