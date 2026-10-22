@@ -61,6 +61,37 @@ DecodedImage? makeThumbnail(
   return _imageToRgba(scaled);
 }
 
+/// 从 RGBA 图中裁剪以 (x, y) 为左上角、rw x rh 的矩形区域（越界自动截断）。
+/// 区域为空时返回 null。
+Uint8List? cropRgba(
+  Uint8List rgba,
+  int w,
+  int h,
+  int x,
+  int y,
+  int rw,
+  int rh,
+) {
+  final x0 = x < 0 ? 0 : x;
+  final y0 = y < 0 ? 0 : y;
+  final x1 = (x + rw).clamp(0, w);
+  final y1 = (y + rh).clamp(0, h);
+  if (x1 <= x0 || y1 <= y0) return null;
+  final out = Uint8List((x1 - x0) * (y1 - y0) * 4);
+  var o = 0;
+  for (var yy = y0; yy < y1; yy++) {
+    final row = yy * w * 4;
+    for (var xx = x0; xx < x1; xx++) {
+      final s = row + xx * 4;
+      out[o++] = rgba[s];
+      out[o++] = rgba[s + 1];
+      out[o++] = rgba[s + 2];
+      out[o++] = rgba[s + 3];
+    }
+  }
+  return out;
+}
+
 /// 程序化生成 n 张内置示例图（横向多色渐变，便于颜色检索）。
 /// 返回 [(key, pngBytes)] 列表，key 形如 'demo_0'。
 List<(String, Uint8List)> buildDemoImages() {

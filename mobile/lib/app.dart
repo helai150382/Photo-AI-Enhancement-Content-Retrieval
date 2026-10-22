@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'core/app_state.dart';
+import 'features/annotate/ui/annotate_screen.dart';
 import 'features/edit/ui/edit_screen.dart';
 import 'features/gallery/ui/gallery_screen.dart';
+import 'features/phototips/ui/photo_tips_screen.dart';
 import 'features/search/ui/search_screen.dart';
 
 class AiPhotoApp extends StatelessWidget {
@@ -34,7 +36,9 @@ class _HomeShellState extends State<HomeShell> {
   late final _pages = <Widget>[
     GalleryScreen(state: widget.state),
     SearchScreen(state: widget.state),
+    AnnotateScreen(state: widget.state),
     EditScreen(state: widget.state),
+    const PhotoTipsScreen(),
   ];
 
   @override
@@ -50,7 +54,9 @@ class _HomeShellState extends State<HomeShell> {
           destinations: const [
             NavigationDestination(icon: Icon(Icons.photo_library), label: '相册'),
             NavigationDestination(icon: Icon(Icons.search), label: '检索'),
+            NavigationDestination(icon: Icon(Icons.touch_app), label: '标注'),
             NavigationDestination(icon: Icon(Icons.auto_fix_high), label: '美化'),
+            NavigationDestination(icon: Icon(Icons.camera_alt), label: '技巧'),
           ],
         ),
       );
@@ -65,7 +71,9 @@ class _HomeShellState extends State<HomeShell> {
             destinations: const [
               NavigationRailDestination(icon: Icon(Icons.photo_library), label: Text('相册')),
               NavigationRailDestination(icon: Icon(Icons.search), label: Text('检索')),
+              NavigationRailDestination(icon: Icon(Icons.touch_app), label: Text('标注')),
               NavigationRailDestination(icon: Icon(Icons.auto_fix_high), label: Text('美化')),
+              NavigationRailDestination(icon: Icon(Icons.camera_alt), label: Text('技巧')),
             ],
           ),
           const VerticalDivider(width: 1),

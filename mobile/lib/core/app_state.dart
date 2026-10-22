@@ -29,4 +29,8 @@ class AppState extends ChangeNotifier {
   }
 
   Future<List<SearchHit>> search(String text) => _search.searchText(text);
+
+  /// 标注检索：按目标图标注区域内容在相册中找相似图。
+  List<SearchHit> searchRegion(Uint8List regionRgba, int rw, int rh) =>
+      _search.searchRegion(regionRgba, rw, rh);
 }
