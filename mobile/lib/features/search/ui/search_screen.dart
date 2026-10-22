@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+
+import '../../../core/app_state.dart';
+import '../../gallery/data/image_codec.dart';
 import '../data/search_service.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({super.key, required this.state});
+
+  final AppState state;
+
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
   final _controller = TextEditingController();
-  final _service = SearchService();
   List<SearchHit> _results = const [];
   bool _loading = false;
 
@@ -17,7 +22,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final text = _controller.text;
     if (text.isEmpty) return;
     setState(() => _loading = true);
-    final hits = await _service.searchText(text);
+    final hits = await widget.state.search(text);
     if (!mounted) return;
     setState(() {
       _results = hits;
@@ -26,6 +31,35 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _resultTile(SearchHit r) {
+    final p = widget.state.photoByKey(r.key);
+    if (p != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.memory(
+              encodePng(p.thumbnail, p.thumbWidth, p.thumbHeight),
+              fit: BoxFit.cover,
+            ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Container(
+                color: Colors.black54,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Text(
+                  '${(r.score * 100).toStringAsFixed(0)}%',
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    // 图片已不在集合中时回退为分数色块。
     return ColoredBox(
       color: Colors.blueGrey.shade200,
       child: Center(
@@ -59,16 +93,15 @@ class _SearchScreenState extends State<SearchScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : GridView.builder(
+                    padding: const EdgeInsets.all(12),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
-                      crossAxisSpacing: 4,
-                      mainAxisSpacing: 4,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
                     ),
                     itemCount: _results.length,
-                    itemBuilder: (_, i) {
-                      return _resultTile(_results[i]);
-                    },
+                    itemBuilder: (_, i) => _resultTile(_results[i]),
                   ),
           ),
         ],
